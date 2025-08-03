@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .toolbar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .canvas {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidepanel {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .widget {
+            position: absolute;
+            border: 2px solid transparent;
+            cursor: move;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            word-wrap: break-word;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+
+        .widget:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .widget.selected {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .widget.resizing {
+            transition: none;
+        }
+
+        .widget.resizing:hover {
+            transform: none;
+        }
+
+        /* Hide resize handles - we'll use edge detection instead */
+        .resize-handle {
+            display: none !important;
+        }
+
+        .resize-handle {
+            position: absolute;
+            background: #00d4ff;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            display: none;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            pointer-events: all;
+        }
+
+        .widget.selected .resize-handle {
+            display: block;
+        }
+
+        .resize-handle:hover {
+            background: #0099cc;
+            transform: scale(1.2);
+        }
+
+        .resize-handle.nw-resize {
+            top: -6px;
+            left: -6px;
+            cursor: nw-resize;
+        }
+
+        .resize-handle.ne-resize {
+            top: -6px;
+            right: -6px;
+            cursor: ne-resize;
+        }
+
+        .resize-handle.sw-resize {
+            bottom: -6px;
+            left: -6px;
+            cursor: sw-resize;
+        }
+
+        .resize-handle.se-resize {
+            bottom: -6px;
+            right: -6px;
+            cursor: se-resize;
+        }
+
+        .resize-handle.n-resize {
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: n-resize;
+        }
+
+        .resize-handle.s-resize {
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: s-resize;
+        }
+
+        .resize-handle.w-resize {
+            left: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: w-resize;
+        }
+
+        .resize-handle.e-resize {
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: e-resize;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .control-group input,
+        .control-group select,
+        .control-group button {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .control-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .control-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .color-input {
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .canvas-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .widget-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .widget-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .widget-item:hover {
+            background: #e9ecef;
+        }
+
+        .widget-item.selected {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="section">
+                <h3>Canvas Controls</h3>
+                <div class="control-group">
+                    <label>Canvas Width</label>
+                    <input type="number" id="canvasWidth" value="800" min="300" max="1500">
+                </div>
+                <div class="control-group">
+                    <label>Canvas Height</label>
+                    <input type="number" id="canvasHeight" value="600" min="200" max="1000">
+                </div>
+                <button class="btn" onclick="updateCanvasSize()">Update Canvas</button>
+            </div>
+
+            <div class="section">
+                <h3>Add Widgets</h3>
+                <div class="control-group">
+                    <label>Widget Type</label>
+                    <select id="widgetType">
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                <button class="btn" onclick="addWidget()">Add Widget</button>
+            </div>
+
+            <div class="section">
+                <h3>Widget List</h3>
+                <div class="widget-list" id="widgetList">
+                    <div class="widget-item">No widgets yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-container">
+            <div class="canvas" id="canvas"></div>
+        </div>
+
+        <!-- Side Panel -->
+        <div class="sidepanel" id="sidepanel">
+            <div class="section">
+                <h3>Canvas Properties</h3>
+                <div class="canvas-info">
+                    <strong>Current Size:</strong> <span id="currentSize">800 × 600</span><br>
+                    <strong>Widgets:</strong> <span id="widgetCount">0</span>
+                </div>
+                <div class="control-group">
+                    <label>Background Color</label>
+                    <input type="color" class="color-input" id="canvasColor" value="#ffffff"
+                        onchange="updateCanvasColor()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Widget Registry System
+        const WidgetRegistry = {
+            widgets: new Map(),
+
+            register(name, widgetClass, config = {}) {
+                this.widgets.set(name, {
+                    class: widgetClass,
+                    label: config.label || name.charAt(0).toUpperCase() + name.slice(1),
+                    description: config.description || '',
+                    defaultSize: config.defaultSize || { width: 100, height: 80 }
+                });
+            },
+
+            create(type, x, y, width, height) {
+                const widgetInfo = this.widgets.get(type);
+                if (!widgetInfo) {
+                    throw new Error(`Widget type '${type}' not found`);
+                }
+
+                const size = widgetInfo.defaultSize;
+                return new widgetInfo.class(
+                    x, y,
+                    width || size.width,
+                    height || size.height
+                );
+            },
+
+            getAll() {
+                return Array.from(this.widgets.entries()).map(([key, value]) => ({
+                    type: key,
+                    ...value
+                }));
+            }
+        };
+
+        // Base Widget Class
+        class BaseWidget {
+            constructor(x = 50, y = 50, width = 100, height = 80, type = 'basic') {
+                this.id = 'widget_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.type = type;
+                this.element = null;
+                this.selected = false;
+                this.dragging = false;
+                this.resizing = false;
+                this.dragOffset = { x: 0, y: 0 };
+                this.resizeData = null;
+
+                // Define parameter schema
+                this.defineParameters();
+
+                this.createDOMElement();
+                this.attachEventListeners();
+                this.createResizeHandles();
+            }
+
+            defineParameters() {
+                this.parameters = {
+                    x: { type: 'int', label: 'X Position', min: 0, value: this.x },
+                    y: { type: 'int', label: 'Y Position', min: 0, value: this.y },
+                    width: { type: 'int', label: 'Width', min: 20, max: 1000, value: this.width },
+                    height: { type: 'int', label: 'Height', min: 20, max: 1000, value: this.height },
+                    backgroundColor: { type: 'color', label: 'Background Color', value: '#667eea' }
+                };
+            }
+
+            createDOMElement() {
+                this.element = document.createElement('div');
+                this.element.className = 'widget';
+                this.element.id = this.id;
+                this.element.style.position = 'relative'; // Ensure relative positioning for handles
+                this.updateStyles();
+                this.updateContent();
+            }
+
+            updateStyles() {
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.width = this.width + 'px';
+                this.element.style.height = this.height + 'px';
+            }
+
+            updateContent() {
+                this.element.textContent = this.type.charAt(0).toUpperCase() + this.type.slice(1);
+            }
+
+            attachEventListeners() {
+                // Handle mousemove for cursor changes
+                this.element.addEventListener('mousemove', (e) => {
+                    if (this.dragging || this.resizing) return;
+
+                    const rect = this.element.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const edgeThreshold = 8;
+
+                    const isOnEdge = x <= edgeThreshold ||
+                        y <= edgeThreshold ||
+                        x >= rect.width - edgeThreshold ||
+                        y >= rect.height - edgeThreshold;
+
+                    if (isOnEdge) {
+                        let direction = '';
+                        if (y <= edgeThreshold) direction += 'n';
+                        if (y >= rect.height - edgeThreshold) direction += 's';
+                        if (x <= edgeThreshold) direction += 'w';
+                        if (x >= rect.width - edgeThreshold) direction += 'e';
+
+                        this.element.style.cursor = direction + '-resize';
+                    } else {
+                        this.element.style.cursor = 'move';
+                    }
+                });
+
+                // Reset cursor when mouse leaves
+                this.element.addEventListener('mouseleave', () => {
+                    if (!this.dragging && !this.resizing) {
+                        this.element.style.cursor = 'move';
+                    }
+                });
+
+                // Handle mousedown on the widget
+                this.element.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+
+                    // Check if clicking on a resize handle
+                    if (e.target.classList.contains('resize-handle')) {
+                        this.startResize(e);
+                        return;
+                    }
+
+                    // Determine if click is on edge or inside
+                    const rect = this.element.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const edgeThreshold = 8; // pixels from edge
+
+                    const isOnEdge = x <= edgeThreshold ||
+                        y <= edgeThreshold ||
+                        x >= rect.width - edgeThreshold ||
+                        y >= rect.height - edgeThreshold;
+
+                    if (isOnEdge) {
+                        // Determine resize direction based on position
+                        let direction = '';
+
+                        if (y <= edgeThreshold) direction += 'n';
+                        if (y >= rect.height - edgeThreshold) direction += 's';
+                        if (x <= edgeThreshold) direction += 'w';
+                        if (x >= rect.width - edgeThreshold) direction += 'e';
+
+                        this.startEdgeResize(e, direction);
+                    } else {
+                        this.startDrag(e);
+                    }
+                });
+
+                // Handle click for selection
+                this.element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.select();
+                });
+            }
+
+            createResizeHandles() {
+                // We're now using edge detection instead of visible handles
+                // This method is kept for compatibility but doesn't create visible handles
+            }
+
+            startResize(e) {
+                this.resizing = true;
+                this.element.classList.add('resizing');
+
+                const direction = e.target.dataset.direction;
+                const rect = this.element.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+
+                this.resizeData = {
+                    direction,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    startWidth: this.width,
+                    startHeight: this.height,
+                    startLeft: this.x,
+                    startTop: this.y
+                };
+
+                document.addEventListener('mousemove', this.resize.bind(this));
+                document.addEventListener('mouseup', this.stopResize.bind(this));
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            resize(e) {
+                if (!this.resizing || !this.resizeData) return;
+
+                const deltaX = e.clientX - this.resizeData.startX;
+                const deltaY = e.clientY - this.resizeData.startY;
+                const direction = this.resizeData.direction;
+
+                let newWidth = this.resizeData.startWidth;
+                let newHeight = this.resizeData.startHeight;
+                let newX = this.resizeData.startLeft;
+                let newY = this.resizeData.startTop;
+
+                // Handle horizontal resizing
+                if (direction.includes('e')) {
+                    newWidth = Math.max(20, this.resizeData.startWidth + deltaX);
+                } else if (direction.includes('w')) {
+                    newWidth = Math.max(20, this.resizeData.startWidth - deltaX);
+                    newX = this.resizeData.startLeft + (this.resizeData.startWidth - newWidth);
+                }
+
+                // Handle vertical resizing
+                if (direction.includes('s')) {
+                    newHeight = Math.max(20, this.resizeData.startHeight + deltaY);
+                } else if (direction.includes('n')) {
+                    newHeight = Math.max(20, this.resizeData.startHeight - deltaY);
+                    newY = this.resizeData.startTop + (this.resizeData.startHeight - newHeight);
+                }
+
+                // Constrain to canvas bounds
+                newX = Math.max(0, Math.min(newX, canvas.offsetWidth - newWidth));
+                newY = Math.max(0, Math.min(newY, canvas.offsetHeight - newHeight));
+
+                // Only update THIS widget - no side effects on other widgets
+                this.x = newX;
+                this.y = newY;
+                this.width = newWidth;
+                this.height = newHeight;
+
+                // Update parameter values for THIS widget only
+                this.parameters.x.value = this.x;
+                this.parameters.y.value = this.y;
+                this.parameters.width.value = this.width;
+                this.parameters.height.value = this.height;
+
+                // Update styles and content for THIS widget only
+                this.updateStyles();
+                this.updateContent();
+
+                // Update sidebar if this widget is selected
+                if (this.selected) {
+                    this.updateSidebarValues();
+                }
+            }
+
+            stopResize() {
+                this.resizing = false;
+                this.element.classList.remove('resizing');
+                this.element.style.cursor = 'move'; // Reset cursor
+                this.resizeData = null;
+                document.removeEventListener('mousemove', this.resize);
+                document.removeEventListener('mouseup', this.stopResize);
+            }
+
+            updateSidebarValues() {
+                // Update sidebar input values without triggering change events
+                const xInput = document.getElementById('param_x');
+                const yInput = document.getElementById('param_y');
+                const widthInput = document.getElementById('param_width');
+                const heightInput = document.getElementById('param_height');
+
+                if (xInput) xInput.value = this.x;
+                if (yInput) yInput.value = this.y;
+                if (widthInput) widthInput.value = this.width;
+                if (heightInput) heightInput.value = this.height;
+            }
+
+            startDrag(e) {
+                this.dragging = true;
+
+                // Get the mouse position relative to the canvas
+                const canvasRect = canvas.getBoundingClientRect();
+                const mouseCanvasX = e.clientX - canvasRect.left;
+                const mouseCanvasY = e.clientY - canvasRect.top;
+
+                // Calculate offset from mouse to widget's current position
+                this.dragOffset.x = mouseCanvasX - this.x;
+                this.dragOffset.y = mouseCanvasY - this.y;
+
+                this.element.style.cursor = 'grabbing';
+
+                document.addEventListener('mousemove', this.drag.bind(this));
+                document.addEventListener('mouseup', this.stopDrag.bind(this));
+                e.preventDefault();
+            }
+
+            startEdgeResize(e, direction) {
+                this.resizing = true;
+                this.element.classList.add('resizing');
+
+                // Set appropriate cursor
+                this.element.style.cursor = direction + '-resize';
+
+                const rect = this.element.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+
+                this.resizeData = {
+                    direction,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    startWidth: this.width,
+                    startHeight: this.height,
+                    startLeft: this.x,
+                    startTop: this.y
+                };
+
+                document.addEventListener('mousemove', this.resize.bind(this));
+                document.addEventListener('mouseup', this.stopResize.bind(this));
+                e.preventDefault();
+            }
+
+            drag(e) {
+                if (!this.dragging) return;
+
+                const canvasRect = canvas.getBoundingClientRect();
+                const mouseCanvasX = e.clientX - canvasRect.left;
+                const mouseCanvasY = e.clientY - canvasRect.top;
+
+                // Calculate new position: mouse position minus the original offset
+                const newX = mouseCanvasX - this.dragOffset.x;
+                const newY = mouseCanvasY - this.dragOffset.y;
+
+                // Constrain to canvas bounds
+                this.x = Math.max(0, Math.min(newX, canvas.offsetWidth - this.width));
+                this.y = Math.max(0, Math.min(newY, canvas.offsetHeight - this.height));
+
+                // Update parameter values
+                this.parameters.x.value = this.x;
+                this.parameters.y.value = this.y;
+
+                this.updateStyles();
+
+                // Update sidebar if this widget is selected
+                if (this.selected) {
+                    this.updateSidebarValues();
+                }
+            }
+
+            stopDrag() {
+                this.dragging = false;
+                this.element.style.cursor = 'move';
+                document.removeEventListener('mousemove', this.drag);
+                document.removeEventListener('mouseup', this.stopDrag);
+            }
+
+            stopDrag() {
+                this.dragging = false;
+                document.removeEventListener('mousemove', this.drag);
+                document.removeEventListener('mouseup', this.stopDrag);
+            }
+
+            select() {
+                // Deselect all widgets
+                widgets.forEach(w => {
+                    w.selected = false;
+                    w.element.classList.remove('selected');
+                });
+
+                // Select this widget
+                this.selected = true;
+                this.element.classList.add('selected');
+                selectedWidget = this;
+
+                this.showSidePanel();
+                updateWidgetList();
+            }
+
+            showSidePanel() {
+                const sidepanel = document.getElementById('sidepanel');
+                const controlsHTML = this.generateParameterControls();
+
+                sidepanel.innerHTML = `
+                    <div class="section">
+                        <h3>${this.type.charAt(0).toUpperCase() + this.type.slice(1)} Widget</h3>
+                        ${controlsHTML}
+                        <button class="btn" onclick="deleteSelectedWidget()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">Delete Widget</button>
+                    </div>
+                `;
+            }
+
+            generateParameterControls() {
+                let html = '';
+
+                Object.entries(this.parameters).forEach(([key, param]) => {
+                    html += `<div class="control-group">`;
+                    html += `<label>${param.label}</label>`;
+
+                    switch (param.type) {
+                        case 'int':
+                        case 'number':
+                            html += `<input type="number" id="param_${key}" value="${param.value}" 
+                                    ${param.min !== undefined ? `min="${param.min}"` : ''} 
+                                    ${param.max !== undefined ? `max="${param.max}"` : ''} 
+                                    ${param.step !== undefined ? `step="${param.step}"` : ''} 
+                                    onchange="updateWidgetParameter('${key}', this.value)">`;
+                            break;
+
+                        case 'float':
+                            html += `<input type="number" id="param_${key}" value="${param.value}" 
+                                    step="0.1"
+                                    ${param.min !== undefined ? `min="${param.min}"` : ''} 
+                                    ${param.max !== undefined ? `max="${param.max}"` : ''} 
+                                    onchange="updateWidgetParameter('${key}', this.value)">`;
+                            break;
+
+                        case 'color':
+                            html += `<input type="color" class="color-input" id="param_${key}" value="${param.value}" 
+                                    onchange="updateWidgetParameter('${key}', this.value)">`;
+                            break;
+
+                        case 'text':
+                        case 'string':
+                            html += `<input type="text" id="param_${key}" value="${param.value}" 
+                                    ${param.maxlength ? `maxlength="${param.maxlength}"` : ''}
+                                    onchange="updateWidgetParameter('${key}', this.value)">`;
+                            break;
+
+                        case 'textarea':
+                            html += `<textarea id="param_${key}" rows="${param.rows || 3}" 
+                                    ${param.maxlength ? `maxlength="${param.maxlength}"` : ''}
+                                    onchange="updateWidgetParameter('${key}', this.value)">${param.value}</textarea>`;
+                            break;
+
+                        case 'select':
+                            html += `<select id="param_${key}" onchange="updateWidgetParameter('${key}', this.value)">`;
+                            param.options.forEach(option => {
+                                const selected = option.value === param.value ? 'selected' : '';
+                                html += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+                            });
+                            html += `</select>`;
+                            break;
+
+                        case 'checkbox':
+                            html += `<input type="checkbox" id="param_${key}" ${param.value ? 'checked' : ''} 
+                                    onchange="updateWidgetParameter('${key}', this.checked)" style="width: auto; margin-right: 10px;">`;
+                            break;
+
+                        case 'range':
+                            html += `<input type="range" id="param_${key}" value="${param.value}" 
+                                    min="${param.min || 0}" max="${param.max || 100}" 
+                                    step="${param.step || 1}"
+                                    onchange="updateWidgetParameter('${key}', this.value)" oninput="this.nextElementSibling.textContent = this.value">
+                                    <span>${param.value}</span>`;
+                            break;
+
+                        default:
+                            html += `<input type="text" id="param_${key}" value="${param.value}" 
+                                    onchange="updateWidgetParameter('${key}', this.value)">`;
+                    }
+
+                    html += `</div>`;
+                });
+
+                return html;
+            }
+
+            getSpecificControls() {
+                // This method is now deprecated in favor of parameter-based system
+                return '';
+            }
+
+            updateProperty(property, value) {
+                // Convert value based on parameter type
+                const param = this.parameters[property];
+                if (param) {
+                    switch (param.type) {
+                        case 'int':
+                            value = parseInt(value) || 0;
+                            break;
+                        case 'float':
+                        case 'number':
+                            value = parseFloat(value) || 0;
+                            break;
+                        case 'checkbox':
+                            value = Boolean(value);
+                            break;
+                        // string, color, text, etc. stay as-is
+                    }
+
+                    // Update parameter value
+                    param.value = value;
+                }
+
+                // Update widget property
+                this[property] = value;
+
+                // Apply visual updates
+                this.applyPropertyChange(property, value);
+            }
+
+            applyPropertyChange(property, value) {
+                // Handle standard positioning and sizing
+                if (['x', 'y', 'width', 'height'].includes(property)) {
+                    this.updateStyles();
+                }
+
+                // Handle background color
+                if (property === 'backgroundColor') {
+                    this.element.style.background = value;
+                    this.element.style.backgroundImage = 'none'; // Clear any gradient
+                }
+
+                // Content updates for size changes
+                if (property === 'width' || property === 'height') {
+                    this.updateContent();
+                }
+            }
+
+            destroy() {
+                if (this.element && this.element.parentNode) {
+                    this.element.parentNode.removeChild(this.element);
+                }
+            }
+        }
+
+        // Specialized Widget Classes
+        class TextWidget extends BaseWidget {
+            constructor(x, y, width, height) {
+                super(x, y, width, height, 'text');
+                this.text = 'Sample Text';
+                this.fontSize = 16;
+                this.textColor = '#333333';
+                this.backgroundColor = '#f0f0f0';
+                this.fontWeight = 'normal';
+                this.textAlign = 'center';
+                this.element.style.background = this.backgroundColor;
+                this.element.style.color = this.textColor;
+                this.element.style.padding = '8px';
+                this.element.style.boxSizing = 'border-box';
+                this.element.style.whiteSpace = 'normal';
+                this.element.style.wordBreak = 'break-word';
+                this.element.style.lineHeight = '1.2';
+                this.updateContent();
+            }
+
+            defineParameters() {
+                super.defineParameters();
+                // Override background color default
+                this.parameters.backgroundColor.value = '#f0f0f0';
+
+                // Add text-specific parameters
+                this.parameters.text = {
+                    type: 'textarea',
+                    label: 'Text Content',
+                    value: this.text,
+                    rows: 3,
+                    maxlength: 500
+                };
+                this.parameters.fontSize = {
+                    type: 'range',
+                    label: 'Font Size',
+                    value: this.fontSize,
+                    min: 8,
+                    max: 72,
+                    step: 1
+                };
+                this.parameters.textColor = {
+                    type: 'color',
+                    label: 'Text Color',
+                    value: this.textColor
+                };
+                this.parameters.fontWeight = {
+                    type: 'select',
+                    label: 'Font Weight',
+                    value: this.fontWeight,
+                    options: [
+                        { value: 'normal', label: 'Normal' },
+                        { value: 'bold', label: 'Bold' },
+                        { value: '300', label: 'Light' },
+                        { value: '600', label: 'Semi-Bold' }
+                    ]
+                };
+                this.parameters.textAlign = {
+                    type: 'select',
+                    label: 'Text Alignment',
+                    value: this.textAlign,
+                    options: [
+                        { value: 'left', label: 'Left' },
+                        { value: 'center', label: 'Center' },
+                        { value: 'right', label: 'Right' }
+                    ]
+                };
+            }
+
+            updateContent() {
+                this.element.textContent = this.text;
+                this.element.style.fontSize = this.fontSize + 'px';
+                this.element.style.fontWeight = this.fontWeight;
+                this.element.style.textAlign = this.textAlign;
+            }
+
+            applyPropertyChange(property, value) {
+                super.applyPropertyChange(property, value);
+
+                if (property === 'text') {
+                    this.element.textContent = value;
+                }
+                if (property === 'fontSize') {
+                    this.element.style.fontSize = value + 'px';
+                }
+                if (property === 'fontWeight') {
+                    this.element.style.fontWeight = value;
+                }
+                if (property === 'textAlign') {
+                    this.element.style.textAlign = value;
+                }
+                if (property === 'textColor') {
+                    this.element.style.color = value;
+                }
+                if (property === 'backgroundColor') {
+                    this.element.style.background = value;
+                    this.element.style.backgroundImage = 'none'; // Clear any gradient
+                }
+            }
+        }
+
+        class ImageWidget extends BaseWidget {
+            constructor(x, y, width, height) {
+                super(x, y, width, height, 'image');
+                this.imageSrc = '';
+                this.borderRadius = 8;
+                this.opacity = 1.0;
+                this.objectFit = 'cover';
+                // Set initial background
+                this.element.style.background = '#84fab0';
+                this.element.style.backgroundImage = 'none';
+                this.element.innerHTML = '<div style="text-align: center;">📷<br>Image</div>';
+            }
+
+            defineParameters() {
+                super.defineParameters();
+                // Override background color default
+                this.parameters.backgroundColor.value = '#84fab0';
+
+                // Add image-specific parameters
+                this.parameters.imageSrc = {
+                    type: 'text',
+                    label: 'Image URL',
+                    value: this.imageSrc
+                };
+                this.parameters.borderRadius = {
+                    type: 'range',
+                    label: 'Border Radius',
+                    value: this.borderRadius,
+                    min: 0,
+                    max: 50,
+                    step: 1
+                };
+                this.parameters.opacity = {
+                    type: 'range',
+                    label: 'Opacity',
+                    value: this.opacity,
+                    min: 0.1,
+                    max: 1.0,
+                    step: 0.1
+                };
+                this.parameters.objectFit = {
+                    type: 'select',
+                    label: 'Image Fit',
+                    value: this.objectFit,
+                    options: [
+                        { value: 'cover', label: 'Cover' },
+                        { value: 'contain', label: 'Contain' },
+                        { value: 'fill', label: 'Fill' },
+                        { value: 'scale-down', label: 'Scale Down' }
+                    ]
+                };
+            }
+
+            applyPropertyChange(property, value) {
+                super.applyPropertyChange(property, value);
+
+                if (property === 'imageSrc') {
+                    if (value) {
+                        this.element.style.backgroundImage = `url(${value})`;
+                        this.element.style.backgroundSize = this.objectFit;
+                        this.element.style.backgroundPosition = 'center';
+                        this.element.innerHTML = '';
+                    } else {
+                        this.element.style.backgroundImage = '';
+                        this.element.style.background = this.parameters.backgroundColor.value;
+                        this.element.innerHTML = '<div style="text-align: center;">📷<br>Image</div>';
+                    }
+                }
+                if (property === 'borderRadius') {
+                    this.element.style.borderRadius = value + 'px';
+                }
+                if (property === 'opacity') {
+                    this.element.style.opacity = value;
+                }
+                if (property === 'objectFit') {
+                    this.element.style.backgroundSize = value;
+                }
+                if (property === 'backgroundColor') {
+                    if (!this.imageSrc) {
+                        this.element.style.background = value;
+                        this.element.style.backgroundImage = 'none';
+                    }
+                }
+            }
+        }
+
+        // Register all available widgets
+        WidgetRegistry.register('basic', BaseWidget, {
+            label: 'Basic Rectangle',
+            description: 'Simple colored rectangle',
+            defaultSize: { width: 100, height: 80 }
+        });
+
+        WidgetRegistry.register('text', TextWidget, {
+            label: 'Text Widget',
+            description: 'Text container with formatting options',
+            defaultSize: { width: 150, height: 60 }
+        });
+
+        WidgetRegistry.register('image', ImageWidget, {
+            label: 'Image Widget',
+            description: 'Image placeholder with URL support',
+            defaultSize: { width: 120, height: 100 }
+        });
+        // Global variables
+        let widgets = [];
+        let selectedWidget = null;
+        const canvas = document.getElementById('canvas');
+
+        // Initialize canvas
+        function initCanvas() {
+            updateCanvasSize();
+            populateWidgetSelector();
+            canvas.addEventListener('click', (e) => {
+                if (e.target === canvas) {
+                    deselectAllWidgets();
+                }
+            });
+        }
+
+        function populateWidgetSelector() {
+            const selector = document.getElementById('widgetType');
+            selector.innerHTML = '';
+
+            WidgetRegistry.getAll().forEach(widget => {
+                const option = document.createElement('option');
+                option.value = widget.type;
+                option.textContent = widget.label;
+                option.title = widget.description;
+                selector.appendChild(option);
+            });
+        }
+
+        function updateCanvasSize() {
+            const width = document.getElementById('canvasWidth').value;
+            const height = document.getElementById('canvasHeight').value;
+
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            document.getElementById('currentSize').textContent = `${width} × ${height}`;
+        }
+
+        function updateCanvasColor() {
+            const color = document.getElementById('canvasColor').value;
+            canvas.style.backgroundColor = color;
+        }
+
+        function addWidget() {
+            const type = document.getElementById('widgetType').value;
+            const x = Math.random() * (canvas.offsetWidth - 150);
+            const y = Math.random() * (canvas.offsetHeight - 80);
+
+            try {
+                const widget = WidgetRegistry.create(type, x, y);
+
+                // Apply initial styling based on type
+                if (type === 'basic') {
+                    widget.element.style.background = widget.parameters.backgroundColor.value;
+                    widget.element.style.backgroundImage = 'none';
+                }
+
+                widgets.push(widget);
+                canvas.appendChild(widget.element);
+
+                updateWidgetCount();
+                updateWidgetList();
+            } catch (error) {
+                console.error('Failed to create widget:', error);
+            }
+        }
+
+        function updateWidgetParameter(property, value) {
+            if (selectedWidget) {
+                selectedWidget.updateProperty(property, value);
+            }
+        }
+
+        function updateWidgetProperty(property, value) {
+            // Legacy function - redirects to new parameter system
+            updateWidgetParameter(property, value);
+        }
+
+        function updateWidgetColor(color) {
+            if (selectedWidget) {
+                selectedWidget.element.style.background = color;
+            }
+        }
+
+        function deleteSelectedWidget() {
+            if (selectedWidget) {
+                const index = widgets.indexOf(selectedWidget);
+                if (index > -1) {
+                    selectedWidget.destroy();
+                    widgets.splice(index, 1);
+                    selectedWidget = null;
+                    showCanvasProperties();
+                    updateWidgetCount();
+                    updateWidgetList();
+                }
+            }
+        }
+
+        function deselectAllWidgets() {
+            widgets.forEach(w => {
+                w.selected = false;
+                w.element.classList.remove('selected');
+            });
+            selectedWidget = null;
+            showCanvasProperties();
+            updateWidgetList();
+        }
+
+        function showCanvasProperties() {
+            const sidepanel = document.getElementById('sidepanel');
+            sidepanel.innerHTML = `
+                <div class="section">
+                    <h3>Canvas Properties</h3>
+                    <div class="canvas-info">
+                        <strong>Current Size:</strong> <span id="currentSize">${canvas.offsetWidth} × ${canvas.offsetHeight}</span><br>
+                        <strong>Widgets:</strong> <span id="widgetCount">${widgets.length}</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Background Color</label>
+                        <input type="color" class="color-input" id="canvasColor" value="#ffffff" onchange="updateCanvasColor()">
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateWidgetCount() {
+            const countElements = document.querySelectorAll('#widgetCount');
+            countElements.forEach(el => el.textContent = widgets.length);
+        }
+
+        function updateWidgetList() {
+            const listContainer = document.getElementById('widgetList');
+
+            if (widgets.length === 0) {
+                listContainer.innerHTML = '<div class="widget-item">No widgets yet</div>';
+                return;
+            }
+
+            listContainer.innerHTML = widgets.map((widget, index) =>
+                `<div class="widget-item ${widget.selected ? 'selected' : ''}" onclick="selectWidgetFromList('${widget.id}')">
+                    ${widget.type.charAt(0).toUpperCase() + widget.type.slice(1)} #${index + 1}
+                </div>`
+            ).join('');
+        }
+
+        function selectWidgetFromList(widgetId) {
+            const widget = widgets.find(w => w.id === widgetId);
+            if (widget) {
+                widget.select();
+            }
+        }
+
+        // Initialize the application
+        initCanvas();
+        showCanvasProperties();
+    </script>
+</body>
+
+</html>
