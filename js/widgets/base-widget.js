@@ -34,6 +34,11 @@ class BaseWidget {
 
     /* ----- DOM / Style --------------------------------------- */
     createDOMElement() {
+        if (typeof this.deferInit === 'function') {
+            this.deferInit();
+            delete this.deferInit;
+        }
+
         this.element = document.createElement('div');
         this.element.className = 'widget';
         this.element.id = this.id;

@@ -5,22 +5,27 @@ class CalendarWidget extends BaseWidget {
     constructor(x, y, w, h) {
         super(x, y, w, h, 'calendar');
 
-        this.startTime = 8;
-        this.endTime = 17;
-        this.granularity = 30;
+        // Match sidebar defaults
+        this.startTime = 6;
+        this.endTime = 23;
+        this.granularity = 60;
         this.showTime = true;
         this.timePosition = 'left-top';
+        this.textColor = '#000000';
+        this.labelColor = '#000000';
+        this.borderColor = '#000000';
 
-        this.textColor = '#000';
-        this.labelColor = '#666';
-        this.borderColor = '#ccc';
+        // Important: also set label font size default here
+        this.labelFontSize = 10;
 
-        // override default background
-        this.parameters.backgroundColor.value = '#f8f9fa';
-        this.applyPropertyChange('backgroundColor', '#f8f9fa');
-
-        this.updateContent();
+        // Set base background
+        this.deferInit = () => {
+            this.parameters.backgroundColor.value = '#dfe4ff';
+            this.applyPropertyChange('backgroundColor', '#dfe4ff');
+            this.updateContent();
+        };
     }
+
 
     defineParameters() {
         super.defineParameters();
@@ -56,7 +61,7 @@ class CalendarWidget extends BaseWidget {
             labelFontSize: {
                 type: 'int',
                 label: 'Hour Label Font Size',
-                value: 12,
+                value: this.labelFontSize,
                 min: 6,
                 max: 32
             }
@@ -65,13 +70,34 @@ class CalendarWidget extends BaseWidget {
     }
 
     updateContent() {
-        const { startTime, endTime, granularity, showTime, timePosition, textColor, labelColor, borderColor } = this.parameters;
-        const rows = [];
+        const {
+            startTime,
+            endTime,
+            granularity,
+            showTime,
+            timePosition,
+            textColor,
+            labelColor,
+            borderColor,
+            labelFontSize
+        } = this.parameters;
 
+        const rows = [];
         const totalMinutes = (endTime.value - startTime.value) * 60;
         const slots = totalMinutes / granularity.value;
+        const fontSize = labelFontSize.value;
 
-        const fs = this.parameters.labelFontSize.value;
+        const position = this.parameters.timePosition?.value || 'left-top';
+
+        const justify =
+            position.includes('left') ? 'flex-start' :
+                position.includes('center') ? 'center' :
+                    'flex-end';
+
+        const align =
+            position.includes('top') ? 'flex-start' :
+                position.includes('middle') ? 'center' :
+                    'flex-end';
 
         for (let i = 0; i < slots; i++) {
             const total = startTime.value * 60 + i * granularity.value;
@@ -79,59 +105,54 @@ class CalendarWidget extends BaseWidget {
             const min = total % 60;
             const timeLabel = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
 
-            const justify =
-                timePosition.value.includes('left') ? 'flex-start' :
-                    timePosition.value.includes('center') ? 'center' :
-                        'flex-end';
-
-            const align =
-                timePosition.value.includes('top') ? 'flex-start' :
-                    timePosition.value.includes('middle') ? 'center' :
-                        'flex-end';
-
             rows.push(`
-                <div style="
-                    flex: 1;
-                    display: flex;
-                    justify-content: ${justify};
-                    align-items: ${align};
-                    border-bottom: 1px solid ${borderColor.value};
-                    padding: 4px 8px;
-                    color: ${textColor.value};
-                    box-sizing: border-box;
-                ">
-                    ${showTime.value ? `<span style="color:${labelColor.value}; font-size: ${fs}px;">${timeLabel}</span>` : ''}
-                </div>
-            `);
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: ${justify};
+                align-items: ${align};
+                border-bottom: 1px solid ${borderColor.value};
+                padding: 4px 8px;
+                color: ${textColor.value};
+                box-sizing: border-box;
+            ">
+                ${showTime.value
+                    ? `<span style="color: ${labelColor.value}; font-size: ${fontSize}px;">${timeLabel}</span>`
+                    : ''}
+            </div>
+        `);
         }
 
         this.element.innerHTML = `
-            <div class="calendar-widget" style="
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                height: 100%;
-                font-family: sans-serif;
-                font-size: 14px;
-            ">
-                ${rows.join('')}
-            </div>
-        `;
+        <div class="calendar-widget" style="
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            font-family: sans-serif;
+            font-size: 14px;
+        ">
+            ${rows.join('')}
+        </div>
+    `;
     }
+
 
     applyPropertyChange(prop, val) {
         super.applyPropertyChange(prop, val);
 
-        const intProps = ['startTime', 'endTime', 'granularity', 'labelFontSize'];
-        const colorProps = ['textColor', 'labelColor', 'borderColor'];
+        const visualProps = [
+            'startTime', 'endTime', 'granularity',
+            'showTime', 'timePosition',
+            'textColor', 'labelColor', 'borderColor',
+            'labelFontSize', 'backgroundColor'
+        ];
 
-        if (intProps.includes(prop)) this[prop] = parseInt(val);
-        if (colorProps.includes(prop)) this[prop] = val;
-        if (prop === 'showTime') this.showTime = Boolean(val);
-        if (prop === 'timePosition') this.timePosition = val;
-
-        this.updateContent();
+        if (visualProps.includes(prop)) {
+            this.updateContent();
+        }
     }
+
 
 }
 

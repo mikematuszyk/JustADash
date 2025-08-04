@@ -1,0 +1,97 @@
+{
+  "version": "2.0",
+  "canvas": {
+    "width": 595,
+    "height": 842,
+    "backgroundColor": "rgb(255, 255, 255)"
+  },
+  "widgetStates": [
+    {
+      "id": "widget_1754310046048_q239fbx0dg",
+      "type": "quote",
+      "x": 270,
+      "y": 4,
+      "width": 318,
+      "height": 128,
+      "zIndex": 1058
+    },
+    {
+      "id": "widget_1754310469779_debgvog993n",
+      "type": "todo",
+      "x": 271,
+      "y": 147,
+      "width": 312,
+      "height": 681,
+      "zIndex": 1059
+    },
+    {
+      "id": "widget_1754310513665_k2j3lj7npji",
+      "type": "date",
+      "x": 9,
+      "y": 7,
+      "width": 248,
+      "height": 42,
+      "zIndex": 1063
+    },
+    {
+      "id": "widget_1754311270959_khqcpm63m3i",
+      "type": "calendar",
+      "x": 11,
+      "y": 61,
+      "width": 250,
+      "height": 767,
+      "zIndex": 1062
+    }
+  ],
+  "widgetProps": {
+    "widget_1754310046048_q239fbx0dg": {
+      "x": 270,
+      "y": 4,
+      "width": 318,
+      "height": 128,
+      "backgroundColor": "#c2c5e4",
+      "textColor": "#ffffff",
+      "showAuthor": true,
+      "quoteFontSize": 16,
+      "authorFontSize": 10
+    },
+    "widget_1754310469779_debgvog993n": {
+      "x": 271,
+      "y": 147,
+      "width": 312,
+      "height": 681,
+      "backgroundColor": "#ffffff",
+      "rows": 15,
+      "showBullets": true,
+      "bulletStyle": "checkbox",
+      "items": ""
+    },
+    "widget_1754310513665_k2j3lj7npji": {
+      "x": 9,
+      "y": 7,
+      "width": 248,
+      "height": 42,
+      "backgroundColor": "#ffeaa7",
+      "dateOffset": 0,
+      "dateFormat": "ddd, MMM D, YYYY",
+      "fontSize": "20",
+      "fontStyle": "normal",
+      "textDecoration": "none"
+    },
+    "widget_1754311270959_khqcpm63m3i": {
+      "x": 11,
+      "y": 61,
+      "width": 250,
+      "height": 767,
+      "backgroundColor": "#e9ecef",
+      "startTime": 7,
+      "endTime": 23,
+      "granularity": "60",
+      "showTime": true,
+      "timePosition": "left-top",
+      "textColor": "#000000",
+      "borderColor": "#000000",
+      "labelFontSize": 10
+    }
+  }
+}
