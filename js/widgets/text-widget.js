@@ -1,6 +1,6 @@
 // js/text-widget.js
 import BaseWidget from './base-widget.js';
-import { WidgetRegistry } from './widget-registry.js';
+import { WidgetRegistry } from '../widget-registry.js';
 
 class TextWidget extends BaseWidget {
     constructor(x, y, w, h) {

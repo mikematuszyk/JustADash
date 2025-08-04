@@ -1,0 +1,6 @@
+Adding a new widget:
+
+1. Create it in the ./js/widgets/ folder
+2. in app.js add the import:
+    import './example-widget.js';
+3. DONE

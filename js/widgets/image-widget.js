@@ -1,6 +1,6 @@
 // js/image-widget.js
 import BaseWidget from './base-widget.js';
-import { WidgetRegistry } from './widget-registry.js';
+import { WidgetRegistry } from '../widget-registry.js';
 
 class ImageWidget extends BaseWidget {
     constructor(x, y, w, h) {

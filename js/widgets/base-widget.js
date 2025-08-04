@@ -1,6 +1,6 @@
 // js/base-widget.js
-import { store } from './state.js';
-import { WidgetRegistry } from './widget-registry.js';
+import { store } from '../state.js';
+import { WidgetRegistry } from '../widget-registry.js';
 
 class BaseWidget {
     constructor(x = 50, y = 50, width = 100, height = 80, type = 'basic') {

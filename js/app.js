@@ -3,9 +3,12 @@ import { store } from './state.js';
 import { WidgetRegistry } from './widget-registry.js';
 import { pluckParamValues, downloadFile, showExportStatus } from './utils.js';
 // Bring widgets into scope so they self-register
-import './base-widget.js';
-import './text-widget.js';
-import './image-widget.js';
+import './widgets/base-widget.js';
+import './widgets/text-widget.js';
+import './widgets/image-widget.js';
+import './widgets/example-widget.js';
+import './widgets/todo-widget.js';
+
 
 // ------------------------------------------------------------
 //  Canvas presets
