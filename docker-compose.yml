@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  justadash:
+    build: .
+    container_name: justadash
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    working_dir: /app
