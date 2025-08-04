@@ -5,25 +5,51 @@ import { WidgetRegistry } from '../widget-registry.js';
 class TextWidget extends BaseWidget {
     constructor(x, y, w, h) {
         super(x, y, w, h, 'text');
+
+        // Initial values
         this.text = 'Sample Text';
         this.fontSize = 16;
         this.textColor = '#333';
         this.backgroundColor = '#f0f0f0';
         this.fontWeight = 'normal';
         this.textAlign = 'center';
+
+        // Default styles
         this.element.style.padding = '8px';
         this.element.style.boxSizing = 'border-box';
-        this.element.style.whiteSpace = 'normal';
-        this.element.style.lineHeight = '1.2';
+        this.element.style.background = this.backgroundColor;
+
         this.updateContent();
     }
+
     defineParameters() {
         super.defineParameters();
-        this.parameters.backgroundColor.value = '#f0f0f0';
         Object.assign(this.parameters, {
-            text: { type: 'textarea', label: 'Text Content', value: this.text, rows: 3, maxlength: 500 },
-            fontSize: { type: 'range', label: 'Font Size', value: this.fontSize, min: 8, max: 72, step: 1 },
-            textColor: { type: 'color', label: 'Text Color', value: this.textColor },
+            text: {
+                type: 'textarea',
+                label: 'Text Content',
+                value: this.text,
+                rows: 3,
+                maxlength: 500
+            },
+            fontSize: {
+                type: 'range',
+                label: 'Font Size',
+                value: this.fontSize,
+                min: 8,
+                max: 72,
+                step: 1
+            },
+            textColor: {
+                type: 'color',
+                label: 'Text Color',
+                value: this.textColor
+            },
+            backgroundColor: {
+                type: 'color',
+                label: 'Background Color',
+                value: this.backgroundColor
+            },
             fontWeight: {
                 type: 'select',
                 label: 'Font Weight',
@@ -47,24 +73,44 @@ class TextWidget extends BaseWidget {
             }
         });
     }
+
     updateContent() {
-        this.element.textContent = this.text;
-        Object.assign(this.element.style, {
-            fontSize: `${this.fontSize}px`,
-            fontWeight: this.fontWeight,
-            textAlign: this.textAlign,
-            color: this.textColor,
-            background: this.backgroundColor
-        });
+        this.element.style.background = this.backgroundColor;
+
+        this.element.innerHTML = `
+        <div class="text-content" style="
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: ${this.textAlign};
+            font-size: ${this.fontSize}px;
+            font-weight: ${this.fontWeight};
+            color: ${this.textColor};
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: sans-serif;
+        ">
+            <div style="width: 100%;">${this.text}</div>
+        </div>
+    `;
     }
+
     applyPropertyChange(prop, val) {
         super.applyPropertyChange(prop, val);
+
         if (['text', 'fontSize', 'fontWeight', 'textAlign', 'textColor', 'backgroundColor'].includes(prop)) {
+            this[prop] = val;
+            if (prop === 'fontSize') this.fontSize = parseInt(val);
             this.updateContent();
         }
     }
 }
 
-WidgetRegistry.register('text', TextWidget, { label: 'Text Widget', description: 'Text container' });
+WidgetRegistry.register('text', TextWidget, {
+    label: 'Text Widget',
+    description: 'Text container'
+});
 
 export default TextWidget;
