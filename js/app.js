@@ -18,10 +18,10 @@ import './widgets/calendar-widget.js'
 //  Canvas presets
 // ------------------------------------------------------------
 const CANVAS_PRESETS = {
-    'a4-portrait': { width: 595, height: 842 },
-    'a4-landscape': { width: 842, height: 595 },
-    'letter-portrait': { width: 612, height: 792 },
-    'letter-landscape': { width: 792, height: 612 },
+    'a4-portrait': { width: 630, height: 891 },
+    'a4-landscape': { width: 891, height: 630 },
+    'letter-portrait': { width: 647, height: 838 },
+    'letter-landscape': { width: 838, height: 647 },
     poster: { width: 600, height: 800 },
     'business-card': { width: 252, height: 144 },
     presentation: { width: 800, height: 450 },
