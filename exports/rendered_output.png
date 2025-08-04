@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exported Canvas</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        #canvas {
+            position: relative;
+            width: 595px;
+            height: 842px;
+            background: rgb(255, 255, 255);
+        }
+        .widget {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas" id="canvas" style="width: 595px; height: 842px; background-color: rgb(255, 255, 255);"><div class="widget" id="widget_1754328543354_7ls26ow9k5b" style="left: 270px; top: 4px; width: 318px; height: 112px; z-index: 1069; background: none rgb(194, 197, 228);">
+      <div style="
+        width:100%;height:100%;padding:10px;box-sizing:border-box;
+        background:#c2c5e4;color:#ffffff;display:flex;
+        flex-direction:column;justify-content:center;
+        align-items:center;text-align:center;
+        overflow:hidden;font-family:serif;
+      ">
+        <div style="font-size:16px;margin-bottom:1em;">
+          “Definiteness of purpose is the starting point of all achievement.”
+        </div>
+        <div style="color:undefined;font-size:10px;">— W. Clement Stone</div>
+      </div></div><div class="widget" id="widget_1754328543355_jkbmngfanqk" style="left: 271px; top: 400px; width: 312px; height: 428px; z-index: 1070; background: none rgb(255, 255, 255); padding: 0px; font-size: 14px; font-family: sans-serif; white-space: nowrap; overflow: hidden;">
+            <div class="todo-list" style="
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+            ">
+                
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+            </div>
+        </div><div class="widget" id="widget_1754328543356_smkep99i85o" style="left: 9px; top: 7px; width: 248px; height: 42px; z-index: 1063; background: none rgb(255, 234, 167);">
+        <div class="date-widget" style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: none;
+            font-family: sans-serif;
+            text-align: center;
+        ">
+            <div style="
+                max-width: 100%;
+                max-height: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            ">Mon, Aug 4, 2025</div>
+        </div>
+    </div><div class="widget" id="widget_1754328543357_gqizkp7dafp" style="left: 11px; top: 60px; width: 250px; height: 767px; z-index: 1066; background: none rgb(233, 236, 239);">
+        <div class="calendar-widget" style="
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            font-family: sans-serif;
+            font-size: 14px;
+        ">
+            
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">07:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">08:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">09:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">10:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">11:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">12:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">13:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">14:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">15:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">16:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">17:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">18:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">19:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">20:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">21:00</span>
+            </div>
+        
+            <div style="
+                flex: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                border-bottom: 1px solid #000000;
+                padding: 4px 8px;
+                color: #000000;
+                box-sizing: border-box;
+            ">
+                <span style="color: undefined; font-size: 10px;">22:00</span>
+            </div>
+        
+        </div>
+    </div><div class="widget" id="widget_1754328543357_4g6t2w9tqfe" style="left: 270px; top: 122px; width: 77px; height: 36px; z-index: 1088; padding: 8px; box-sizing: border-box; white-space: normal; line-height: 1.2; font-size: 16px; font-weight: normal; text-align: center; color: rgb(51, 51, 51); background: rgb(240, 240, 240);">Habits</div><div class="widget" id="widget_1754328543358_y8terj3ujkg" style="left: 272px; top: 169px; width: 311px; height: 176px; z-index: 1087; background: none rgb(236, 247, 255); padding: 0px; font-size: 14px; font-family: sans-serif; white-space: nowrap; overflow: hidden;">
+            <div class="todo-list" style="
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+            ">
+                
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">Duolingo</span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">Aktywność fizyczna</span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+                <div class="todo-item" style="
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 10px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid #e6e6e6;
+                    gap: 8px;
+                ">
+                    <span style="min-width: 1em; font-size: 1.2em;">☐</span>
+                    <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;"></span>
+                </div>
+            
+            </div>
+        </div><div class="widget" id="widget_1754328543358_sl6lf0jucz8" style="left: 274px; top: 354px; width: 83px; height: 43px; z-index: 1098; padding: 8px; box-sizing: border-box; white-space: normal; line-height: 1.2; font-size: 16px; font-weight: normal; text-align: center; color: rgb(51, 51, 51); background: rgb(240, 240, 240);">To Do</div></div>
+</body>
+</html>

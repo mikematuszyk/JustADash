@@ -225,20 +225,36 @@ async function loadProject() {
 //  Export
 // ------------------------------------------------------------
 function exportCanvas(formatOverride = null, dpiOverride = null) {
-    const format = formatOverride || document.getElementById('exportFormat').value;
-    const dpi = dpiOverride !== null ? parseInt(dpiOverride, 10) : parseInt(document.getElementById('exportDPI').value, 10);
     const canvasEl = document.getElementById('canvas');
+    const dpi = dpiOverride !== null
+        ? parseInt(dpiOverride, 10)
+        : parseInt(document.getElementById('exportDPI').value, 10);
 
-    if (format === 'html') {
-        exportAsHTML(canvasEl);
-    } else if (format === 'pdf') {
-        exportAsPDF(canvasEl, dpi);
-    } else if (format === 'png') {
-        exportAsPNG(canvasEl, dpi);
+    if (formatOverride !== null) {
+        const format = formatOverride.trim().toLowerCase();
+        if (format === 'html') {
+            exportAsHTML(canvasEl);
+        } else if (format === 'pdf') {
+            exportAsPDF(canvasEl, dpi);
+        } else if (format === 'png') {
+            exportAsPNG(canvasEl, dpi);
+        } else {
+            showExportStatus('❌ Unknown export format');
+        }
     } else {
-        showExportStatus('❌ Unknown export format');
+        const format = document.getElementById('exportFormat').value.trim().toLowerCase();
+        if (format === 'html') {
+            exportAsHTML(canvasEl);
+        } else if (format === 'pdf') {
+            exportAsPDF(canvasEl, dpi);
+        } else if (format === 'png') {
+            exportAsPNG(canvasEl, dpi);
+        } else {
+            showExportStatus('❌ Unknown export format');
+        }
     }
 }
+
 
 
 
