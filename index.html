@@ -99,83 +99,9 @@
             transform: none;
         }
 
-        /* Hide resize handles - we'll use edge detection instead */
-        .resize-handle {
-            display: none !important;
-        }
-
-        .resize-handle {
-            position: absolute;
-            background: #00d4ff;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 12px;
-            height: 12px;
-            display: none;
-            transition: all 0.2s ease;
-            z-index: 1000;
-            pointer-events: all;
-        }
-
-        .widget.selected .resize-handle {
-            display: block;
-        }
-
-        .resize-handle:hover {
-            background: #0099cc;
-            transform: scale(1.2);
-        }
-
-        .resize-handle.nw-resize {
-            top: -6px;
-            left: -6px;
-            cursor: nw-resize;
-        }
-
-        .resize-handle.ne-resize {
-            top: -6px;
-            right: -6px;
-            cursor: ne-resize;
-        }
-
-        .resize-handle.sw-resize {
-            bottom: -6px;
-            left: -6px;
-            cursor: sw-resize;
-        }
-
-        .resize-handle.se-resize {
-            bottom: -6px;
-            right: -6px;
-            cursor: se-resize;
-        }
-
-        .resize-handle.n-resize {
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: n-resize;
-        }
-
-        .resize-handle.s-resize {
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: s-resize;
-        }
-
-        .resize-handle.w-resize {
-            left: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: w-resize;
-        }
-
-        .resize-handle.e-resize {
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: e-resize;
+        .widget.dragging {
+            transition: none;
+            z-index: 9999 !important;
         }
 
         .section {
@@ -251,6 +177,15 @@
             transform: translateY(0);
         }
 
+        .btn.layer-btn {
+            padding: 8px 16px;
+            margin: 2px;
+            font-size: 12px;
+            min-width: auto;
+            width: auto;
+            display: inline-block;
+        }
+
         .color-input {
             height: 40px;
             border: none;
@@ -281,6 +216,9 @@
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .widget-item:hover {
@@ -290,6 +228,18 @@
         .widget-item.selected {
             background: #667eea;
             color: white;
+        }
+
+        .layer-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .layer-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -388,6 +338,12 @@
             }
         };
 
+        // Global variables
+        let widgets = [];
+        let selectedWidget = null;
+        let nextZIndex = 1000;
+        const canvas = document.getElementById('canvas');
+
         // Base Widget Class
         class BaseWidget {
             constructor(x = 50, y = 50, width = 100, height = 80, type = 'basic') {
@@ -403,13 +359,13 @@
                 this.resizing = false;
                 this.dragOffset = { x: 0, y: 0 };
                 this.resizeData = null;
+                this.zIndex = nextZIndex++;
 
                 // Define parameter schema
                 this.defineParameters();
 
                 this.createDOMElement();
                 this.attachEventListeners();
-                this.createResizeHandles();
             }
 
             defineParameters() {
@@ -426,7 +382,8 @@
                 this.element = document.createElement('div');
                 this.element.className = 'widget';
                 this.element.id = this.id;
-                this.element.style.position = 'relative'; // Ensure relative positioning for handles
+                this.element.style.position = 'absolute';
+                this.element.style.zIndex = this.zIndex;
                 this.updateStyles();
                 this.updateContent();
             }
@@ -481,17 +438,14 @@
                 this.element.addEventListener('mousedown', (e) => {
                     e.stopPropagation();
 
-                    // Check if clicking on a resize handle
-                    if (e.target.classList.contains('resize-handle')) {
-                        this.startResize(e);
-                        return;
-                    }
+                    // Bring to front
+                    this.bringToFront();
 
                     // Determine if click is on edge or inside
                     const rect = this.element.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    const edgeThreshold = 8; // pixels from edge
+                    const edgeThreshold = 8;
 
                     const isOnEdge = x <= edgeThreshold ||
                         y <= edgeThreshold ||
@@ -520,113 +474,41 @@
                 });
             }
 
-            createResizeHandles() {
-                // We're now using edge detection instead of visible handles
-                // This method is kept for compatibility but doesn't create visible handles
+            bringToFront() {
+                this.zIndex = nextZIndex++;
+                this.element.style.zIndex = this.zIndex;
             }
 
-            startResize(e) {
-                this.resizing = true;
-                this.element.classList.add('resizing');
-
-                const direction = e.target.dataset.direction;
-                const rect = this.element.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
-
-                this.resizeData = {
-                    direction,
-                    startX: e.clientX,
-                    startY: e.clientY,
-                    startWidth: this.width,
-                    startHeight: this.height,
-                    startLeft: this.x,
-                    startTop: this.y
-                };
-
-                document.addEventListener('mousemove', this.resize.bind(this));
-                document.addEventListener('mouseup', this.stopResize.bind(this));
-                e.preventDefault();
-                e.stopPropagation();
+            sendToBack() {
+                // Find the lowest z-index
+                const minZ = Math.min(...widgets.map(w => w.zIndex));
+                this.zIndex = minZ - 1;
+                this.element.style.zIndex = this.zIndex;
             }
 
-            resize(e) {
-                if (!this.resizing || !this.resizeData) return;
-
-                const deltaX = e.clientX - this.resizeData.startX;
-                const deltaY = e.clientY - this.resizeData.startY;
-                const direction = this.resizeData.direction;
-
-                let newWidth = this.resizeData.startWidth;
-                let newHeight = this.resizeData.startHeight;
-                let newX = this.resizeData.startLeft;
-                let newY = this.resizeData.startTop;
-
-                // Handle horizontal resizing
-                if (direction.includes('e')) {
-                    newWidth = Math.max(20, this.resizeData.startWidth + deltaX);
-                } else if (direction.includes('w')) {
-                    newWidth = Math.max(20, this.resizeData.startWidth - deltaX);
-                    newX = this.resizeData.startLeft + (this.resizeData.startWidth - newWidth);
-                }
-
-                // Handle vertical resizing
-                if (direction.includes('s')) {
-                    newHeight = Math.max(20, this.resizeData.startHeight + deltaY);
-                } else if (direction.includes('n')) {
-                    newHeight = Math.max(20, this.resizeData.startHeight - deltaY);
-                    newY = this.resizeData.startTop + (this.resizeData.startHeight - newHeight);
-                }
-
-                // Constrain to canvas bounds
-                newX = Math.max(0, Math.min(newX, canvas.offsetWidth - newWidth));
-                newY = Math.max(0, Math.min(newY, canvas.offsetHeight - newHeight));
-
-                // Only update THIS widget - no side effects on other widgets
-                this.x = newX;
-                this.y = newY;
-                this.width = newWidth;
-                this.height = newHeight;
-
-                // Update parameter values for THIS widget only
-                this.parameters.x.value = this.x;
-                this.parameters.y.value = this.y;
-                this.parameters.width.value = this.width;
-                this.parameters.height.value = this.height;
-
-                // Update styles and content for THIS widget only
-                this.updateStyles();
-                this.updateContent();
-
-                // Update sidebar if this widget is selected
-                if (this.selected) {
-                    this.updateSidebarValues();
+            moveUp() {
+                // Find widgets with higher z-index
+                const higherWidgets = widgets.filter(w => w.zIndex > this.zIndex);
+                if (higherWidgets.length > 0) {
+                    const nextHigher = Math.min(...higherWidgets.map(w => w.zIndex));
+                    this.zIndex = nextHigher + 1;
+                    this.element.style.zIndex = this.zIndex;
                 }
             }
 
-            stopResize() {
-                this.resizing = false;
-                this.element.classList.remove('resizing');
-                this.element.style.cursor = 'move'; // Reset cursor
-                this.resizeData = null;
-                document.removeEventListener('mousemove', this.resize);
-                document.removeEventListener('mouseup', this.stopResize);
-            }
-
-            updateSidebarValues() {
-                // Update sidebar input values without triggering change events
-                const xInput = document.getElementById('param_x');
-                const yInput = document.getElementById('param_y');
-                const widthInput = document.getElementById('param_width');
-                const heightInput = document.getElementById('param_height');
-
-                if (xInput) xInput.value = this.x;
-                if (yInput) yInput.value = this.y;
-                if (widthInput) widthInput.value = this.width;
-                if (heightInput) heightInput.value = this.height;
+            moveDown() {
+                // Find widgets with lower z-index
+                const lowerWidgets = widgets.filter(w => w.zIndex < this.zIndex);
+                if (lowerWidgets.length > 0) {
+                    const nextLower = Math.max(...lowerWidgets.map(w => w.zIndex));
+                    this.zIndex = nextLower - 1;
+                    this.element.style.zIndex = this.zIndex;
+                }
             }
 
             startDrag(e) {
                 this.dragging = true;
+                this.element.classList.add('dragging');
 
                 // Get the mouse position relative to the canvas
                 const canvasRect = canvas.getBoundingClientRect();
@@ -650,9 +532,6 @@
 
                 // Set appropriate cursor
                 this.element.style.cursor = direction + '-resize';
-
-                const rect = this.element.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
 
                 this.resizeData = {
                     direction,
@@ -696,17 +575,88 @@
                 }
             }
 
+            resize(e) {
+                if (!this.resizing || !this.resizeData) return;
+
+                const deltaX = e.clientX - this.resizeData.startX;
+                const deltaY = e.clientY - this.resizeData.startY;
+                const direction = this.resizeData.direction;
+
+                let newWidth = this.resizeData.startWidth;
+                let newHeight = this.resizeData.startHeight;
+                let newX = this.resizeData.startLeft;
+                let newY = this.resizeData.startTop;
+
+                // Handle horizontal resizing
+                if (direction.includes('e')) {
+                    newWidth = Math.max(20, this.resizeData.startWidth + deltaX);
+                } else if (direction.includes('w')) {
+                    newWidth = Math.max(20, this.resizeData.startWidth - deltaX);
+                    newX = this.resizeData.startLeft + (this.resizeData.startWidth - newWidth);
+                }
+
+                // Handle vertical resizing
+                if (direction.includes('s')) {
+                    newHeight = Math.max(20, this.resizeData.startHeight + deltaY);
+                } else if (direction.includes('n')) {
+                    newHeight = Math.max(20, this.resizeData.startHeight - deltaY);
+                    newY = this.resizeData.startTop + (this.resizeData.startHeight - newHeight);
+                }
+
+                // Constrain to canvas bounds
+                newX = Math.max(0, Math.min(newX, canvas.offsetWidth - newWidth));
+                newY = Math.max(0, Math.min(newY, canvas.offsetHeight - newHeight));
+
+                // Update this widget's properties
+                this.x = newX;
+                this.y = newY;
+                this.width = newWidth;
+                this.height = newHeight;
+
+                // Update parameter values
+                this.parameters.x.value = this.x;
+                this.parameters.y.value = this.y;
+                this.parameters.width.value = this.width;
+                this.parameters.height.value = this.height;
+
+                // Update styles and content
+                this.updateStyles();
+                this.updateContent();
+
+                // Update sidebar if this widget is selected
+                if (this.selected) {
+                    this.updateSidebarValues();
+                }
+            }
+
             stopDrag() {
                 this.dragging = false;
+                this.element.classList.remove('dragging');
                 this.element.style.cursor = 'move';
                 document.removeEventListener('mousemove', this.drag);
                 document.removeEventListener('mouseup', this.stopDrag);
             }
 
-            stopDrag() {
-                this.dragging = false;
-                document.removeEventListener('mousemove', this.drag);
-                document.removeEventListener('mouseup', this.stopDrag);
+            stopResize() {
+                this.resizing = false;
+                this.element.classList.remove('resizing');
+                this.element.style.cursor = 'move';
+                this.resizeData = null;
+                document.removeEventListener('mousemove', this.resize);
+                document.removeEventListener('mouseup', this.stopResize);
+            }
+
+            updateSidebarValues() {
+                // Update sidebar input values without triggering change events
+                const xInput = document.getElementById('param_x');
+                const yInput = document.getElementById('param_y');
+                const widthInput = document.getElementById('param_width');
+                const heightInput = document.getElementById('param_height');
+
+                if (xInput) xInput.value = this.x;
+                if (yInput) yInput.value = this.y;
+                if (widthInput) widthInput.value = this.width;
+                if (heightInput) heightInput.value = this.height;
             }
 
             select() {
@@ -728,12 +678,30 @@
             showSidePanel() {
                 const sidepanel = document.getElementById('sidepanel');
                 const controlsHTML = this.generateParameterControls();
+                const layerControls = this.generateLayerControls();
 
                 sidepanel.innerHTML = `
                     <div class="section">
                         <h3>${this.type.charAt(0).toUpperCase() + this.type.slice(1)} Widget</h3>
                         ${controlsHTML}
+                        ${layerControls}
                         <button class="btn" onclick="deleteSelectedWidget()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">Delete Widget</button>
+                    </div>
+                `;
+            }
+
+            generateLayerControls() {
+                const currentLayer = widgets.length - widgets.indexOf(this);
+                return `
+                    <div class="control-group">
+                        <label>Layer Controls</label>
+                        <div class="layer-controls">
+                            <button class="btn layer-btn" onclick="selectedWidget.bringToFront(); updateWidgetList();">Front</button>
+                            <button class="btn layer-btn" onclick="selectedWidget.moveUp(); updateWidgetList();">Up</button>
+                            <button class="btn layer-btn" onclick="selectedWidget.moveDown(); updateWidgetList();">Down</button>
+                            <button class="btn layer-btn" onclick="selectedWidget.sendToBack(); updateWidgetList();">Back</button>
+                        </div>
+                        <div class="layer-info">Z-Index: ${this.zIndex}</div>
                     </div>
                 `;
             }
@@ -814,11 +782,6 @@
                 return html;
             }
 
-            getSpecificControls() {
-                // This method is now deprecated in favor of parameter-based system
-                return '';
-            }
-
             updateProperty(property, value) {
                 // Convert value based on parameter type
                 const param = this.parameters[property];
@@ -857,7 +820,7 @@
                 // Handle background color
                 if (property === 'backgroundColor') {
                     this.element.style.background = value;
-                    this.element.style.backgroundImage = 'none'; // Clear any gradient
+                    this.element.style.backgroundImage = 'none';
                 }
 
                 // Content updates for size changes
@@ -969,7 +932,7 @@
                 }
                 if (property === 'backgroundColor') {
                     this.element.style.background = value;
-                    this.element.style.backgroundImage = 'none'; // Clear any gradient
+                    this.element.style.backgroundImage = 'none';
                 }
             }
         }
@@ -1078,10 +1041,6 @@
             description: 'Image placeholder with URL support',
             defaultSize: { width: 120, height: 100 }
         });
-        // Global variables
-        let widgets = [];
-        let selectedWidget = null;
-        const canvas = document.getElementById('canvas');
 
         // Initialize canvas
         function initCanvas() {
@@ -1152,17 +1111,6 @@
             }
         }
 
-        function updateWidgetProperty(property, value) {
-            // Legacy function - redirects to new parameter system
-            updateWidgetParameter(property, value);
-        }
-
-        function updateWidgetColor(color) {
-            if (selectedWidget) {
-                selectedWidget.element.style.background = color;
-            }
-        }
-
         function deleteSelectedWidget() {
             if (selectedWidget) {
                 const index = widgets.indexOf(selectedWidget);
@@ -1217,9 +1165,13 @@
                 return;
             }
 
-            listContainer.innerHTML = widgets.map((widget, index) =>
+            // Sort widgets by z-index (highest first)
+            const sortedWidgets = [...widgets].sort((a, b) => b.zIndex - a.zIndex);
+
+            listContainer.innerHTML = sortedWidgets.map((widget, index) =>
                 `<div class="widget-item ${widget.selected ? 'selected' : ''}" onclick="selectWidgetFromList('${widget.id}')">
-                    ${widget.type.charAt(0).toUpperCase() + widget.type.slice(1)} #${index + 1}
+                    <span>${widget.type.charAt(0).toUpperCase() + widget.type.slice(1)} #${widgets.indexOf(widget) + 1}</span>
+                    <small style="opacity: 0.7;">Layer ${sortedWidgets.length - index}</small>
                 </div>`
             ).join('');
         }
