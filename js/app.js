@@ -8,6 +8,10 @@ import './widgets/text-widget.js';
 import './widgets/image-widget.js';
 import './widgets/example-widget.js';
 import './widgets/todo-widget.js';
+import './widgets/date-widget.js';
+import './widgets/quote-widget.js';
+import './widgets/calendar-widget.js'
+
 
 
 // ------------------------------------------------------------

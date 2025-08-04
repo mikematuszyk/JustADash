@@ -38,7 +38,7 @@ class BaseWidget {
         this.element.className = 'widget';
         this.element.id = this.id;
         this.updateStyles();
-        this.updateContent();
+        setTimeout(() => this.updateContent(), 0);
         this.element.style.zIndex = this.zIndex;
     }
 
