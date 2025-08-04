@@ -282,6 +282,20 @@
             </div>
 
             <div class="section">
+                <h3>Save & Load</h3>
+                <div class="control-group">
+                    <button class="btn" onclick="saveProject()"
+                        style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                        💾 Save Project
+                    </button>
+                </div>
+                <div class="control-group">
+                    <label>Load Project</label>
+                    <input type="file" id="loadFile" accept=".json" onchange="loadProject()" style="padding: 5px;">
+                </div>
+            </div>
+
+            <div class="section">
                 <h3>Export</h3>
                 <div class="control-group">
                     <label>Export Format</label>
@@ -295,6 +309,7 @@
                     style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
                     📄 Export Canvas
                 </button>
+                <div id="exportStatus" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
             </div>
 
             <div class="section">
@@ -865,6 +880,56 @@
                 }
             }
 
+            // Serialize widget data for saving
+            serialize() {
+                return {
+                    id: this.id,
+                    type: this.type,
+                    x: this.x,
+                    y: this.y,
+                    width: this.width,
+                    height: this.height,
+                    zIndex: this.zIndex,
+                    parameters: this.parameters
+                };
+            }
+
+            // Restore widget from serialized data
+            static deserialize(data) {
+                const widget = new BaseWidget(data.x, data.y, data.width, data.height, data.type);
+                widget.id = data.id;
+                widget.zIndex = data.zIndex;
+                widget.parameters = data.parameters;
+
+                // Apply all parameter values
+                Object.entries(data.parameters).forEach(([key, param]) => {
+                    widget[key] = param.value;
+                });
+
+                return widget;
+            }
+
+            // Restore widget from serialized data
+            static deserialize(data) {
+                const widget = new TextWidget(data.x, data.y, data.width, data.height);
+                widget.id = data.id;
+                widget.zIndex = data.zIndex;
+                widget.parameters = data.parameters;
+
+                // Apply all parameter values
+                Object.entries(data.parameters).forEach(([key, param]) => {
+                    widget[key] = param.value;
+                });
+
+                // Update visual appearance
+                widget.updateContent();
+                widget.element.style.background = widget.backgroundColor;
+                widget.element.style.color = widget.textColor;
+                widget.element.style.zIndex = widget.zIndex;
+
+                return widget;
+            }
+
             // Render method for export - returns clean HTML
             render() {
                 const div = document.createElement('div');
@@ -888,6 +953,33 @@
                 div.style.userSelect = 'none';
                 div.textContent = this.type.charAt(0).toUpperCase() + this.type.slice(1);
                 return div;
+            }
+
+            // Restore widget from serialized data
+            static deserialize(data) {
+                const widget = new ImageWidget(data.x, data.y, data.width, data.height);
+                widget.id = data.id;
+                widget.zIndex = data.zIndex;
+                widget.parameters = data.parameters;
+
+                // Apply all parameter values
+                Object.entries(data.parameters).forEach(([key, param]) => {
+                    widget[key] = param.value;
+                });
+
+                // Update visual appearance
+                widget.element.style.zIndex = widget.zIndex;
+                if (widget.imageSrc) {
+                    widget.element.style.backgroundImage = `url(${widget.imageSrc})`;
+                    widget.element.style.backgroundSize = widget.objectFit;
+                    widget.element.innerHTML = '';
+                } else {
+                    widget.element.style.background = widget.backgroundColor;
+                }
+                widget.element.style.borderRadius = widget.borderRadius + 'px';
+                widget.element.style.opacity = widget.opacity;
+
+                return widget;
             }
 
             destroy() {
@@ -1266,12 +1358,195 @@
         }
 
         function exportAsPDF() {
-            // For PDF export, we'll create HTML and suggest using browser's print to PDF
-            exportAsHTML();
+            showExportStatus('Generating PDF...');
 
+            // Create HTML content for PDF
+            const exportContainer = document.createElement('div');
+            exportContainer.style.position = 'relative';
+            exportContainer.style.width = canvas.offsetWidth + 'px';
+            exportContainer.style.height = canvas.offsetHeight + 'px';
+            exportContainer.style.backgroundColor = canvas.style.backgroundColor || '#ffffff';
+            exportContainer.style.fontFamily = 'Arial, sans-serif';
+            exportContainer.style.overflow = 'hidden';
+
+            // Sort widgets by z-index for proper layering
+            const sortedWidgets = [...widgets].sort((a, b) => a.zIndex - b.zIndex);
+
+            // Add rendered widgets
+            sortedWidgets.forEach(widget => {
+                const renderedWidget = widget.render();
+                exportContainer.appendChild(renderedWidget);
+            });
+
+            // Create complete HTML for PDF generation
+            const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            margin: 0;
+            size: ${canvas.offsetWidth}px ${canvas.offsetHeight}px;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: ${canvas.offsetWidth}px;
+            height: ${canvas.offsetHeight}px;
+            overflow: hidden;
+        }
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        ${exportContainer.innerHTML}
+    </div>
+</body>
+</html>`;
+
+            // Convert to PDF using browser's built-in capabilities
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+
+            // Create iframe for PDF generation
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'absolute';
+            iframe.style.left = '-9999px';
+            iframe.style.width = canvas.offsetWidth + 'px';
+            iframe.style.height = canvas.offsetHeight + 'px';
+
+            document.body.appendChild(iframe);
+
+            iframe.onload = function () {
+                setTimeout(() => {
+                    try {
+                        // Trigger print dialog with PDF settings
+                        iframe.contentWindow.print();
+                        showExportStatus('PDF export initiated. Choose "Save as PDF" in the print dialog.');
+                    } catch (e) {
+                        console.error('PDF export error:', e);
+                        showExportStatus('PDF export failed. Downloading HTML version instead.');
+                        downloadFile(htmlContent, 'canvas-export-for-pdf.html', 'text/html');
+                    }
+
+                    // Clean up
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        URL.revokeObjectURL(url);
+                    }, 1000);
+                }, 500);
+            };
+
+            iframe.src = url;
+        }
+
+        function saveProject() {
+            const projectData = {
+                version: '1.0',
+                canvas: {
+                    width: canvas.offsetWidth,
+                    height: canvas.offsetHeight,
+                    backgroundColor: canvas.style.backgroundColor || '#ffffff'
+                },
+                widgets: widgets.map(widget => widget.serialize()),
+                metadata: {
+                    created: new Date().toISOString(),
+                    widgetCount: widgets.length
+                }
+            };
+
+            const jsonString = JSON.stringify(projectData, null, 2);
+            const timestamp = new Date().toISOString().slice(0, 16).replace(/[:.]/g, '-');
+            downloadFile(jsonString, `canvas-project-${timestamp}.json`, 'application/json');
+
+            showExportStatus('Project saved successfully!');
+        }
+
+        function loadProject() {
+            const fileInput = document.getElementById('loadFile');
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const projectData = JSON.parse(e.target.result);
+
+                    // Clear existing widgets
+                    widgets.forEach(widget => widget.destroy());
+                    widgets = [];
+                    selectedWidget = null;
+
+                    // Restore canvas settings
+                    if (projectData.canvas) {
+                        document.getElementById('canvasWidth').value = projectData.canvas.width;
+                        document.getElementById('canvasHeight').value = projectData.canvas.height;
+                        updateCanvasSize();
+                        canvas.style.backgroundColor = projectData.canvas.backgroundColor;
+                        document.getElementById('canvasColor').value = projectData.canvas.backgroundColor;
+                    }
+
+                    // Restore widgets
+                    if (projectData.widgets) {
+                        projectData.widgets.forEach(widgetData => {
+                            let widget;
+
+                            // Create widget based on type
+                            switch (widgetData.type) {
+                                case 'text':
+                                    widget = TextWidget.deserialize(widgetData);
+                                    break;
+                                case 'image':
+                                    widget = ImageWidget.deserialize(widgetData);
+                                    break;
+                                default:
+                                    widget = BaseWidget.deserialize(widgetData);
+                            }
+
+                            widgets.push(widget);
+                            canvas.appendChild(widget.element);
+
+                            // Update nextZIndex to prevent conflicts
+                            if (widget.zIndex >= nextZIndex) {
+                                nextZIndex = widget.zIndex + 1;
+                            }
+                        });
+                    }
+
+                    // Update UI
+                    updateWidgetCount();
+                    updateWidgetList();
+                    showCanvasProperties();
+
+                    showExportStatus(`Project loaded! ${widgets.length} widgets restored.`);
+
+                } catch (error) {
+                    console.error('Error loading project:', error);
+                    showExportStatus('Error loading project file. Please check the file format.');
+                }
+
+                // Clear file input
+                fileInput.value = '';
+            };
+
+            reader.readAsText(file);
+        }
+
+        function showExportStatus(message) {
+            const statusDiv = document.getElementById('exportStatus');
+            statusDiv.textContent = message;
+            statusDiv.style.color = message.includes('Error') || message.includes('failed') ? '#dc3545' : '#28a745';
+
+            // Clear message after 5 seconds
             setTimeout(() => {
-                alert('HTML file downloaded! To convert to PDF:\n\n1. Open the HTML file in your browser\n2. Press Ctrl+P (or Cmd+P on Mac)\n3. Choose "Save as PDF" as destination\n4. Adjust settings as needed and save\n\nThis ensures the best quality and compatibility.');
-            }, 500);
+                statusDiv.textContent = '';
+            }, 5000);
         }
 
         function exportAsPNG() {
@@ -1356,7 +1631,8 @@
             canvas.style.width = width + 'px';
             canvas.style.height = height + 'px';
 
-            document.getElementById('currentSize').textContent = `${width} × ${height}`;
+            const currentSizeElements = document.querySelectorAll('#currentSize');
+            currentSizeElements.forEach(el => el.textContent = `${width} × ${height}`);
         }
 
         function updateCanvasColor() {
