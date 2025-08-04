@@ -249,6 +249,26 @@
         <!-- Toolbar -->
         <div class="toolbar">
             <div class="section">
+                <h3>Canvas Presets</h3>
+                <div class="control-group">
+                    <label>Quick Presets</label>
+                    <select id="canvasPresets" onchange="applyPreset()">
+                        <option value="">Choose a preset...</option>
+                        <option value="custom">Custom</option>
+                        <option value="a4-portrait">A4 Portrait (210×297)</option>
+                        <option value="a4-landscape">A4 Landscape (297×210)</option>
+                        <option value="letter-portrait">US Letter Portrait (216×279)</option>
+                        <option value="letter-landscape">US Letter Landscape (279×216)</option>
+                        <option value="poster">Poster (420×594)</option>
+                        <option value="business-card">Business Card (89×51)</option>
+                        <option value="presentation">Presentation 16:9 (800×450)</option>
+                        <option value="social-post">Social Media Post (400×400)</option>
+                        <option value="banner">Web Banner (728×90)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
                 <h3>Canvas Controls</h3>
                 <div class="control-group">
                     <label>Canvas Width</label>
@@ -259,6 +279,22 @@
                     <input type="number" id="canvasHeight" value="600" min="200" max="1000">
                 </div>
                 <button class="btn" onclick="updateCanvasSize()">Update Canvas</button>
+            </div>
+
+            <div class="section">
+                <h3>Export</h3>
+                <div class="control-group">
+                    <label>Export Format</label>
+                    <select id="exportFormat">
+                        <option value="html">HTML Document</option>
+                        <option value="pdf">PDF Document</option>
+                        <option value="png">PNG Image</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="exportCanvas()"
+                    style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    📄 Export Canvas
+                </button>
             </div>
 
             <div class="section">
@@ -829,6 +865,31 @@
                 }
             }
 
+            // Render method for export - returns clean HTML
+            render() {
+                const div = document.createElement('div');
+                div.style.position = 'absolute';
+                div.style.left = this.x + 'px';
+                div.style.top = this.y + 'px';
+                div.style.width = this.width + 'px';
+                div.style.height = this.height + 'px';
+                div.style.background = this.parameters.backgroundColor.value;
+                div.style.borderRadius = '8px';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.fontWeight = 'bold';
+                div.style.color = '#333';
+                div.style.fontSize = '14px';
+                div.style.fontFamily = 'Arial, sans-serif';
+                div.style.overflow = 'hidden';
+                div.style.wordWrap = 'break-word';
+                div.style.textOverflow = 'ellipsis';
+                div.style.userSelect = 'none';
+                div.textContent = this.type.charAt(0).toUpperCase() + this.type.slice(1);
+                return div;
+            }
+
             destroy() {
                 if (this.element && this.element.parentNode) {
                     this.element.parentNode.removeChild(this.element);
@@ -935,6 +996,34 @@
                     this.element.style.backgroundImage = 'none';
                 }
             }
+
+            // Render method for export - returns clean HTML
+            render() {
+                const div = document.createElement('div');
+                div.style.position = 'absolute';
+                div.style.left = this.x + 'px';
+                div.style.top = this.y + 'px';
+                div.style.width = this.width + 'px';
+                div.style.height = this.height + 'px';
+                div.style.background = this.backgroundColor;
+                div.style.color = this.textColor;
+                div.style.fontSize = this.fontSize + 'px';
+                div.style.fontWeight = this.fontWeight;
+                div.style.textAlign = this.textAlign;
+                div.style.fontFamily = 'Arial, sans-serif';
+                div.style.padding = '8px';
+                div.style.boxSizing = 'border-box';
+                div.style.whiteSpace = 'normal';
+                div.style.wordBreak = 'break-word';
+                div.style.lineHeight = '1.2';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = this.textAlign === 'left' ? 'flex-start' :
+                    this.textAlign === 'right' ? 'flex-end' : 'center';
+                div.style.overflow = 'hidden';
+                div.textContent = this.text;
+                return div;
+            }
         }
 
         class ImageWidget extends BaseWidget {
@@ -1021,6 +1110,37 @@
                     }
                 }
             }
+
+            // Render method for export - returns clean HTML
+            render() {
+                const div = document.createElement('div');
+                div.style.position = 'absolute';
+                div.style.left = this.x + 'px';
+                div.style.top = this.y + 'px';
+                div.style.width = this.width + 'px';
+                div.style.height = this.height + 'px';
+                div.style.borderRadius = this.borderRadius + 'px';
+                div.style.opacity = this.opacity;
+                div.style.overflow = 'hidden';
+
+                if (this.imageSrc) {
+                    div.style.backgroundImage = `url(${this.imageSrc})`;
+                    div.style.backgroundSize = this.objectFit;
+                    div.style.backgroundPosition = 'center';
+                    div.style.backgroundRepeat = 'no-repeat';
+                } else {
+                    div.style.background = this.backgroundColor;
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'center';
+                    div.style.fontFamily = 'Arial, sans-serif';
+                    div.style.fontSize = '14px';
+                    div.style.color = '#666';
+                    div.innerHTML = '📷<br>Image';
+                }
+
+                return div;
+            }
         }
 
         // Register all available widgets
@@ -1042,6 +1162,19 @@
             defaultSize: { width: 120, height: 100 }
         });
 
+        // Canvas presets with correct proportions
+        const CANVAS_PRESETS = {
+            'a4-portrait': { width: 595, height: 842, name: 'A4 Portrait' },
+            'a4-landscape': { width: 842, height: 595, name: 'A4 Landscape' },
+            'letter-portrait': { width: 612, height: 792, name: 'US Letter Portrait' },
+            'letter-landscape': { width: 792, height: 612, name: 'US Letter Landscape' },
+            'poster': { width: 600, height: 800, name: 'Poster' },
+            'business-card': { width: 252, height: 144, name: 'Business Card' },
+            'presentation': { width: 800, height: 450, name: 'Presentation 16:9' },
+            'social-post': { width: 400, height: 400, name: 'Social Media Post' },
+            'banner': { width: 728, height: 90, name: 'Web Banner' }
+        };
+
         // Initialize canvas
         function initCanvas() {
             updateCanvasSize();
@@ -1051,6 +1184,156 @@
                     deselectAllWidgets();
                 }
             });
+        }
+
+        function applyPreset() {
+            const presetSelect = document.getElementById('canvasPresets');
+            const preset = CANVAS_PRESETS[presetSelect.value];
+
+            if (preset) {
+                document.getElementById('canvasWidth').value = preset.width;
+                document.getElementById('canvasHeight').value = preset.height;
+                updateCanvasSize();
+            }
+        }
+
+        function exportCanvas() {
+            const format = document.getElementById('exportFormat').value;
+
+            switch (format) {
+                case 'html':
+                    exportAsHTML();
+                    break;
+                case 'pdf':
+                    exportAsPDF();
+                    break;
+                case 'png':
+                    exportAsPNG();
+                    break;
+            }
+        }
+
+        function exportAsHTML() {
+            // Create clean HTML version
+            const exportContainer = document.createElement('div');
+            exportContainer.style.position = 'relative';
+            exportContainer.style.width = canvas.offsetWidth + 'px';
+            exportContainer.style.height = canvas.offsetHeight + 'px';
+            exportContainer.style.backgroundColor = canvas.style.backgroundColor || '#ffffff';
+            exportContainer.style.fontFamily = 'Arial, sans-serif';
+            exportContainer.style.overflow = 'hidden';
+
+            // Sort widgets by z-index for proper layering
+            const sortedWidgets = [...widgets].sort((a, b) => a.zIndex - b.zIndex);
+
+            // Add rendered widgets
+            sortedWidgets.forEach(widget => {
+                const renderedWidget = widget.render();
+                exportContainer.appendChild(renderedWidget);
+            });
+
+            // Create complete HTML document
+            const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exported Canvas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .canvas-export {
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-export">
+        ${exportContainer.outerHTML}
+    </div>
+</body>
+</html>`;
+
+            // Download HTML file
+            downloadFile(htmlContent, 'canvas-export.html', 'text/html');
+        }
+
+        function exportAsPDF() {
+            // For PDF export, we'll create HTML and suggest using browser's print to PDF
+            exportAsHTML();
+
+            setTimeout(() => {
+                alert('HTML file downloaded! To convert to PDF:\n\n1. Open the HTML file in your browser\n2. Press Ctrl+P (or Cmd+P on Mac)\n3. Choose "Save as PDF" as destination\n4. Adjust settings as needed and save\n\nThis ensures the best quality and compatibility.');
+            }, 500);
+        }
+
+        function exportAsPNG() {
+            // Create a temporary canvas for image export
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+
+            // Set canvas size
+            tempCanvas.width = canvas.offsetWidth;
+            tempCanvas.height = canvas.offsetHeight;
+
+            // Fill background
+            ctx.fillStyle = canvas.style.backgroundColor || '#ffffff';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            // Note: This is a simplified PNG export. Full implementation would require
+            // html2canvas library or similar for complex widgets
+            alert('PNG export is simplified in this demo. For full PNG export functionality, you would need to integrate a library like html2canvas or use server-side rendering.');
+
+            // Simple text-based export for demonstration
+            const sortedWidgets = [...widgets].sort((a, b) => a.zIndex - b.zIndex);
+
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            sortedWidgets.forEach(widget => {
+                // Draw basic representation
+                ctx.fillStyle = widget.parameters.backgroundColor.value;
+                ctx.fillRect(widget.x, widget.y, widget.width, widget.height);
+
+                if (widget.type === 'text') {
+                    ctx.fillStyle = widget.textColor;
+                    ctx.font = `${widget.fontSize}px Arial`;
+                    ctx.fillText(widget.text, widget.x + widget.width / 2, widget.y + widget.height / 2);
+                } else {
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(widget.type, widget.x + widget.width / 2, widget.y + widget.height / 2);
+                }
+            });
+
+            // Download PNG
+            tempCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'canvas-export.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function populateWidgetSelector() {
