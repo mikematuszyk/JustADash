@@ -1,0 +1,151 @@
+{
+  "version": "2.0",
+  "canvas": {
+    "width": 595,
+    "height": 842,
+    "backgroundColor": "rgb(255, 255, 255)"
+  },
+  "widgetStates": [
+    {
+      "id": "widget_1754310046048_q239fbx0dg",
+      "type": "quote",
+      "x": 270,
+      "y": 4,
+      "width": 318,
+      "height": 112,
+      "zIndex": 1069
+    },
+    {
+      "id": "widget_1754310469779_debgvog993n",
+      "type": "todo",
+      "x": 271,
+      "y": 400,
+      "width": 312,
+      "height": 428,
+      "zIndex": 1070
+    },
+    {
+      "id": "widget_1754310513665_k2j3lj7npji",
+      "type": "date",
+      "x": 9,
+      "y": 7,
+      "width": 248,
+      "height": 42,
+      "zIndex": 1063
+    },
+    {
+      "id": "widget_1754311270959_khqcpm63m3i",
+      "type": "calendar",
+      "x": 11,
+      "y": 60,
+      "width": 250,
+      "height": 767,
+      "zIndex": 1066
+    },
+    {
+      "id": "widget_1754321845897_0xlzg3kzd5e",
+      "type": "text",
+      "x": 270.3294562653738,
+      "y": 122.37034169799199,
+      "width": 77,
+      "height": 36,
+      "zIndex": 1088
+    },
+    {
+      "id": "widget_1754321870163_llz18oe3gwr",
+      "type": "todo",
+      "x": 272.82590566565983,
+      "y": 169.03462621032804,
+      "width": 311,
+      "height": 176,
+      "zIndex": 1087
+    },
+    {
+      "id": "widget_1754326573172_y3yafdtw4f",
+      "type": "text",
+      "x": 274.5525528720455,
+      "y": 354.0080479732993,
+      "width": 83,
+      "height": 43,
+      "zIndex": 1098
+    }
+  ],
+  "widgetProps": {
+    "widget_1754310046048_q239fbx0dg": {
+      "x": 270,
+      "y": 4,
+      "width": 318,
+      "height": 112,
+      "backgroundColor": "#c2c5e4",
+      "textColor": "#ffffff",
+      "showAuthor": true,
+      "quoteFontSize": 16,
+      "authorFontSize": 10
+    },
+    "widget_1754310469779_debgvog993n": {
+      "x": 271,
+      "y": 400,
+      "width": 312,
+      "height": 428,
+      "backgroundColor": "#ffffff",
+      "rows": 15,
+      "showBullets": true,
+      "bulletStyle": "checkbox",
+      "items": ""
+    },
+    "widget_1754310513665_k2j3lj7npji": {
+      "x": 9,
+      "y": 7,
+      "width": 248,
+      "height": 42,
+      "backgroundColor": "#ffeaa7",
+      "dateOffset": 0,
+      "dateFormat": "ddd, MMM D, YYYY",
+      "fontSize": "20",
+      "fontStyle": "normal",
+      "textDecoration": "none"
+    },
+    "widget_1754311270959_khqcpm63m3i": {
+      "x": 11,
+      "y": 60,
+      "width": 250,
+      "height": 767,
+      "backgroundColor": "#e9ecef",
+      "startTime": 7,
+      "endTime": 23,
+      "granularity": "60",
+      "showTime": true,
+      "timePosition": "left-top",
+      "textColor": "#000000",
+      "borderColor": "#000000",
+      "labelFontSize": 10
+    },
+    "widget_1754321845897_0xlzg3kzd5e": {
+      "x": 270.3294562653738,
+      "y": 122.37034169799199,
+      "width": 77,
+      "height": 36,
+      "backgroundColor": "#f0f0f0",
+      "text": "Habits"
+    },
+    "widget_1754321870163_llz18oe3gwr": {
+      "x": 272.82590566565983,
+      "y": 169.03462621032804,
+      "width": 311,
+      "height": 176,
+      "backgroundColor": "#ecf7ff",
+      "rows": 5,
+      "showBullets": true,
+      "bulletStyle": "checkbox",
+      "items": "Duolingo\nAktywność fizyczna"
+    },
+    "widget_1754326573172_y3yafdtw4f": {
+      "x": 274.5525528720455,
+      "y": 354.0080479732993,
+      "width": 83,
+      "height": 43,
+      "backgroundColor": "#f0f0f0",
+      "text": "To Do"
+    }
+  }
+}

@@ -224,9 +224,9 @@ async function loadProject() {
 // ------------------------------------------------------------
 //  Export
 // ------------------------------------------------------------
-function exportCanvas() {
-    const format = document.getElementById('exportFormat').value;
-    const dpi = parseInt(document.getElementById('exportDPI').value, 10);
+function exportCanvas(formatOverride = null, dpiOverride = null) {
+    const format = formatOverride || document.getElementById('exportFormat').value;
+    const dpi = dpiOverride !== null ? parseInt(dpiOverride, 10) : parseInt(document.getElementById('exportDPI').value, 10);
     const canvasEl = document.getElementById('canvas');
 
     if (format === 'html') {
@@ -239,6 +239,7 @@ function exportCanvas() {
         showExportStatus('❌ Unknown export format');
     }
 }
+
 
 
 function exportAsHTML(canvasEl) {
