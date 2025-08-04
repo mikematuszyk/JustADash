@@ -38,11 +38,12 @@ body {
 
 .canvas-container {
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
+    overflow: auto;
+    padding: 20px;
+    /* optional, gives space around canvas */
 }
+
 
 .canvas {
     background: #fff;
@@ -51,6 +52,11 @@ body {
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+
+
+    /* Ensure size is applied */
+    min-width: max-content;
+    min-height: max-content;
 }
 
 /* Widgets --------------------------------------------------------- */
@@ -172,6 +178,12 @@ body {
     min-width: auto;
     width: auto;
     display: inline-block;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 4px;
 }
 
 .color-input {
